@@ -1428,3 +1428,170 @@ tr:hover {
         max-height: 80px;
     }
 }
+/* ADD THIS TO THE END OF YOUR css/styles.css FILE */
+
+/* ========================================
+   PAGE ISOLATION FIX - CRITICAL
+   ======================================== */
+
+/* CRITICAL: Ensure only active page content is visible */
+.page {
+    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.page.active {
+    display: block !important;
+    opacity: 1;
+    visibility: visible;
+    z-index: 2;
+}
+
+/* Hide all content inside inactive pages */
+.page:not(.active) * {
+    display: none !important;
+}
+
+.page.active * {
+    display: initial;
+}
+
+/* Specific overrides for proper display in active pages */
+.page.active .stats-grid {
+    display: grid !important;
+}
+
+.page.active .action-buttons {
+    display: grid !important;
+}
+
+.page.active .form-grid {
+    display: grid !important;
+}
+
+.page.active .table-wrapper {
+    display: block !important;
+}
+
+.page.active .form-container {
+    display: block !important;
+}
+
+.page.active .data-table {
+    display: block !important;
+}
+
+.page.active .alert {
+    display: block !important;
+}
+
+.page.active .quick-actions {
+    display: block !important;
+}
+
+.page.active .alert-sections {
+    display: flex !important;
+    flex-direction: column;
+}
+
+.page.active .filter-container {
+    display: block !important;
+}
+
+.page.active .filter-buttons {
+    display: flex !important;
+}
+
+.page.active .table-controls {
+    display: flex !important;
+}
+
+.page.active .form-actions {
+    display: flex !important;
+}
+
+.page.active .page-header {
+    display: block !important;
+}
+
+.page.active .cow-card {
+    display: block !important;
+}
+
+.page.active .stat-card {
+    display: block !important;
+}
+
+.page.active table {
+    display: table !important;
+}
+
+.page.active thead {
+    display: table-header-group !important;
+}
+
+.page.active tbody {
+    display: table-row-group !important;
+}
+
+.page.active tr {
+    display: table-row !important;
+}
+
+.page.active th,
+.page.active td {
+    display: table-cell !important;
+}
+
+.page.active .form-group {
+    display: flex !important;
+    flex-direction: column;
+}
+
+.page.active button {
+    display: inline-block !important;
+}
+
+.page.active input,
+.page.active select,
+.page.active textarea {
+    display: block !important;
+}
+
+.page.active label {
+    display: block !important;
+}
+
+.page.active span {
+    display: inline !important;
+}
+
+.page.active p {
+    display: block !important;
+}
+
+.page.active h1,
+.page.active h2,
+.page.active h3,
+.page.active h4,
+.page.active h5 {
+    display: block !important;
+}
+
+/* Mobile responsiveness maintained */
+@media (max-width: 768px) {
+    .page.active .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .page.active .action-buttons {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .page.active .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
