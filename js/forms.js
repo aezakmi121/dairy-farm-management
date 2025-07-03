@@ -398,3 +398,344 @@ function generateReport() {
     
     showAlert('info', `Generating ${reportType} report from ${fromDate} to ${toDate}`);
 }
+
+
+// Unique Number Validation & Image Handling - Add to forms.js
+
+// Unique number validation for cows
+function validateCowNumber(number, excludeId = null) {
+    return !appData.cows.some(cow => cow.number === number && cow.id !== excludeId);
+}
+
+// Unique number validation for calves
+function validateCalfNumber(number, excludeId = null) {
+    // Check against both cows and calves
+    const existsInCows = appData.cows.some(cow => cow.number === number && cow.id !== excludeId);
+    const existsInCalves = appData.calves.some(calf => calf.number === number && calf.id !== excludeId);
+    return !existsInCows && !existsInCalves;
+}
+
+// Real-time number validation
+function setupNumberValidation() {
+    const cowNumberInput = document.getElementById('cowNumber');
+    if (cowNumberInput) {
+        cowNumberInput.addEventListener('input', function() {
+            const number = this.value.trim();
+            const isValid = validateCowNumber(number);
+            
+            this.classList.toggle('invalid', !isValid && number !== '');
+            
+            // Show/hide validation message
+            let validationMsg = this.parentNode.querySelector('.validation-message');
+            if (!validationMsg) {
+                validationMsg = document.createElement('div');
+                validationMsg.className = 'validation-message';
+                this.parentNode.appendChild(validationMsg);
+            }
+            
+            if (!isValid && number !== '') {
+                validationMsg.textContent = '❌ This cow number already exists!';
+                validationMsg.className = 'validation-message error';
+            } else if (number !== '') {
+                validationMsg.textContent = '✅ Number is available';
+                validationMsg.className = 'validation-message success';
+            } else {
+                validationMsg.textContent = '';
+            }
+        });
+    }
+    
+    const calfNumberInput = document.getElementById('calfNumber');
+    if (calfNumberInput) {
+        calfNumberInput.addEventListener('input', function() {
+            const number = this.value.trim();
+            const isValid = validateCalfNumber(number);
+            
+            this.classList.toggle('invalid', !isValid && number !== '');
+            
+            let validationMsg = this.parentNode.querySelector('.validation-message');
+            if (!validationMsg) {
+                validationMsg = document.createElement('div');
+                validationMsg.className = 'validation-message';
+                this.parentNode.appendChild(validationMsg);
+            }
+            
+            if (!isValid && number !== '') {
+                validationMsg.textContent = '❌ This number already exists!';
+                validationMsg.className = 'validation-message error';
+            } else if (number !== '') {
+                validationMsg.textContent = '✅ Number is available';
+                validationMsg.className = 'validation-message success';
+            } else {
+                validationMsg.textContent = '';
+            }
+        });
+    }
+}
+
+// Image handling functions
+function setupImagePreview() {
+    const cowImageInput = document.getElementById('cowImage');
+    if (cowImageInput) {
+        cowImageInput.addEventListener('change', function() {
+            handleImagePreview(this, 'imagePreview');
+        });
+    }
+    
+    const calfImageInput = document.getElementById('calfImage');
+    if (calfImageInput) {
+        calfImageInput.addEventListener('change', function() {
+            handleImagePreview(this, 'calfImagePreview');
+        });
+    }
+}
+
+function handleImagePreview(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const file = input.files[0];
+    
+    if (file) {
+        // Validate file size (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            showAlert('danger', 'Image size must be less than 2MB');
+            input.value = '';
+            preview.innerHTML = '';
+            return;
+        }
+        
+        // Validate file type
+        if (!file.type.match('image.*')) {
+            showAlert('danger', 'Please select a valid image file');
+            input.value = '';
+            preview.innerHTML = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <div class="image-preview-container">
+                    <img src="${e.target.result}" alt="Preview" class="preview-image">
+                    <button type="button" class="remove-image" onclick="removeImagePreview('${input.id}', '${previewId}')">×</button>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.innerHTML = '';
+    }
+}
+
+function removeImagePreview(inputId, previewId) {
+    document.getElementById(inputId).value = '';
+    document.getElementById(previewId).innerHTML = '';
+}
+
+// Enhanced cow form submission with validation
+function setupEnhancedCowForm() {
+    document.getElementById('cowForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const cowNumber = document.getElementById('cowNumber').value.trim();
+        
+        // Validate unique number
+        if (!validateCowNumber(cowNumber)) {
+            showAlert('danger', 'Cow number already exists! Please choose a different number.');
+            return;
+        }
+        
+        const cowData = {
+            id: 'COW' + String(Date.now()).slice(-6), // Use timestamp for unique ID
+            number: cowNumber,
+            breed: document.getElementById('cowBreed').value,
+            dob: document.getElementById('cowDob').value,
+            arrival: document.getElementById('cowArrival').value,
+            weight: parseFloat(document.getElementById('cowWeight').value) || 0,
+            bcs: parseInt(document.getElementById('cowBcs').value) || 3,
+            status: 'Active',
+            image: null,
+            createdDate: new Date().toISOString()
+        };
+        
+        // Handle image upload
+        const imageFile = document.getElementById('cowImage').files[0];
+        if (imageFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cowData.image = e.target.result;
+                saveCowData(cowData);
+            };
+            reader.readAsDataURL(imageFile);
+        } else {
+            saveCowData(cowData);
+        }
+    });
+}
+
+function saveCowData(cowData) {
+    appData.cows.push(cowData);
+    saveData();
+    document.getElementById('cowForm').reset();
+    document.getElementById('imagePreview').innerHTML = '';
+    updateCowList();
+    populateDropdowns();
+    updateDashboard();
+    showAlert('success', `Cow #${cowData.number} added successfully!`);
+}
+
+// Enhanced calf form submission with validation
+function setupEnhancedCalfForm() {
+    document.getElementById('calfForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const calfGender = document.getElementById('calfGender').value;
+        const calfNumber = document.getElementById('calfNumber').value.trim();
+        
+        // Validate calf number for females
+        if (calfGender === 'Female') {
+            if (!calfNumber) {
+                showAlert('danger', 'Calf number is required for female calves!');
+                return;
+            }
+            
+            if (!validateCalfNumber(calfNumber)) {
+                showAlert('danger', 'Calf number already exists! Please choose a different number.');
+                return;
+            }
+        }
+        
+        const calfData = {
+            id: 'CALF' + String(Date.now()).slice(-6),
+            number: calfGender === 'Female' ? calfNumber : `Male-${Date.now()}`,
+            gender: calfGender,
+            birth: document.getElementById('calfBirth').value,
+            mother: document.getElementById('calfMother').value,
+            weight: parseFloat(document.getElementById('calfWeight').value) || 0,
+            breed: document.getElementById('calfBreed').value,
+            image: null,
+            status: 'Active',
+            createdDate: new Date().toISOString()
+        };
+        
+        // Handle image upload
+        const imageFile = document.getElementById('calfImage').files[0];
+        if (imageFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                calfData.image = e.target.result;
+                saveCalfData(calfData);
+            };
+            reader.readAsDataURL(imageFile);
+        } else {
+            saveCalfData(calfData);
+        }
+    });
+}
+
+function saveCalfData(calfData) {
+    appData.calves.push(calfData);
+    saveData();
+    document.getElementById('calfForm').reset();
+    document.getElementById('calfImagePreview').innerHTML = '';
+    // Reset calf number field to disabled
+    document.getElementById('calfNumber').disabled = true;
+    updateCalfRecords();
+    showAlert('success', `Calf #${calfData.number} registered successfully!`);
+}
+
+// Show existing numbers for reference
+function showExistingNumbers() {
+    const existingCowNumbers = appData.cows.map(cow => cow.number).sort((a, b) => {
+        // Sort numerically if possible, otherwise alphabetically
+        const aNum = parseInt(a);
+        const bNum = parseInt(b);
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+            return aNum - bNum;
+        }
+        return a.localeCompare(b);
+    });
+    
+    const existingCalfNumbers = appData.calves
+        .filter(calf => calf.gender === 'Female')
+        .map(calf => calf.number)
+        .sort((a, b) => {
+            const aNum = parseInt(a);
+            const bNum = parseInt(b);
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return aNum - bNum;
+            }
+            return a.localeCompare(b);
+        });
+    
+    // Create reference panel
+    const referencePanel = document.createElement('div');
+    referencePanel.className = 'number-reference-panel';
+    referencePanel.innerHTML = `
+        <div class="reference-section">
+            <h4>Existing Cow Numbers:</h4>
+            <div class="number-list">
+                ${existingCowNumbers.length > 0 ? existingCowNumbers.join(', ') : 'None yet'}
+            </div>
+        </div>
+        <div class="reference-section">
+            <h4>Existing Female Calf Numbers:</h4>
+            <div class="number-list">
+                ${existingCalfNumbers.length > 0 ? existingCalfNumbers.join(', ') : 'None yet'}
+            </div>
+        </div>
+        <div class="reference-section">
+            <h4>💡 Numbering Tips:</h4>
+            <ul>
+                <li>Use sequential numbers (101, 102, 103...)</li>
+                <li>Or use year-based (2024001, 2024002...)</li>
+                <li>Keep it simple and consistent</li>
+                <li>Female calves become cows when they start producing milk</li>
+            </ul>
+        </div>
+    `;
+    
+    return referencePanel;
+}
+
+// Add reference panel to forms
+function addNumberReferenceToForms() {
+    const cowForm = document.getElementById('cowForm');
+    const calfForm = document.getElementById('calfForm');
+    
+    if (cowForm && !document.querySelector('.cow-number-reference')) {
+        const referencePanel = showExistingNumbers();
+        referencePanel.classList.add('cow-number-reference');
+        cowForm.parentNode.appendChild(referencePanel);
+    }
+    
+    if (calfForm && !document.querySelector('.calf-number-reference')) {
+        const referencePanel = showExistingNumbers();
+        referencePanel.classList.add('calf-number-reference');
+        calfForm.parentNode.appendChild(referencePanel);
+    }
+}
+
+// Suggest next available number
+function suggestNextNumber() {
+    const existingNumbers = appData.cows.map(cow => parseInt(cow.number)).filter(num => !isNaN(num));
+    if (existingNumbers.length === 0) return '101';
+    
+    const maxNumber = Math.max(...existingNumbers);
+    return String(maxNumber + 1);
+}
+
+// Add suggestion button
+function addNumberSuggestion() {
+    const cowNumberInput = document.getElementById('cowNumber');
+    if (cowNumberInput && !cowNumberInput.parentNode.querySelector('.suggest-number')) {
+        const suggestBtn = document.createElement('button');
+        suggestBtn.type = 'button';
+        suggestBtn.className = 'btn-small suggest-number';
+        suggestBtn.textContent = '💡 Suggest Number';
+        suggestBtn.onclick = function() {
+            cowNumberInput.value = suggestNextNumber();
+            cowNumberInput.dispatchEvent(new Event('input')); // Trigger validation
+        };
+        cowNumberInput.parentNode.appendChild(suggestBtn);
+    }
+}
