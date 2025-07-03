@@ -495,3 +495,391 @@ tr:hover {
     margin-bottom: 20px;
     text-align: center;
 }
+
+/* Enhanced CSS Styles - Add to styles.css */
+
+/* Search and Filter Enhancements */
+.search-info {
+    background: #e8f4fd;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.filter-container {
+    margin-top: 15px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: #ecf0f1;
+    border: 2px solid #bdc3c7;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.filter-btn:hover {
+    background: #d5dbdb;
+    transform: translateY(-1px);
+}
+
+.filter-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+/* Cow Card Enhancements */
+.cow-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.cow-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-view {
+    background: #3498db;
+    color: white;
+}
+
+.btn-view:hover {
+    background: #2980b9;
+}
+
+.btn-edit {
+    background: #f39c12;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #e67e22;
+}
+
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+}
+
+.cow-status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.cow-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ecf0f1;
+}
+
+.no-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #ecf0f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #7f8c8d;
+}
+
+/* Image Upload and Preview */
+.image-preview {
+    margin-top: 10px;
+}
+
+.image-preview-container {
+    position: relative;
+    display: inline-block;
+}
+
+.preview-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid #ecf0f1;
+}
+
+.remove-image {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.current-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-top: 8px;
+    border: 2px solid #ecf0f1;
+}
+
+/* Form Validation */
+.form-help {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-top: 4px;
+}
+
+.validation-message {
+    font-size: 0.8rem;
+    margin-top: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.validation-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.validation-message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.form-group input.invalid {
+    border-color: #e74c3c;
+    background: #fdf2f2;
+}
+
+.suggest-number {
+    margin-top: 8px;
+    background: #17a2b8;
+    color: white;
+}
+
+.suggest-number:hover {
+    background: #138496;
+}
+
+/* Number Reference Panel */
+.number-reference-panel {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.reference-section {
+    margin-bottom: 15px;
+}
+
+.reference-section h4 {
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.number-list {
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    font-family: monospace;
+    font-size: 0.9rem;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.reference-section ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.reference-section li {
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Modal Enhancements */
+.cow-detail-view {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 20px;
+    max-width: 600px;
+}
+
+.cow-image-section {
+    text-align: center;
+}
+
+.cow-detail-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 15px;
+    object-fit: cover;
+    border: 3px solid #ecf0f1;
+}
+
+.no-image-large {
+    width: 180px;
+    height: 180px;
+    border-radius: 15px;
+    background: #ecf0f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #7f8c8d;
+    border: 3px solid #bdc3c7;
+}
+
+.cow-info-section h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.info-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #3498db;
+}
+
+.info-item strong {
+    display: block;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+/* Status Colors */
+.status-milking {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-dry {
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+.status-pregnant {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-fresh {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-sick {
+    background: #fce4ec;
+    color: #ad1457;
+}
+
+.status-open {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-sold {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+/* Mobile Responsive Updates */
+@media (max-width: 768px) {
+    .cow-detail-view {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .cow-actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .btn-small {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+    
+    .filter-buttons {
+        justify-content: center;
+    }
+    
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cow-thumbnail {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .no-image {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+}
