@@ -78,6 +78,9 @@
                     <button class="btn-small" onclick="exportData()" title="Export Data">
                         📤 Export
                     </button>
+                    <button class="btn-small" onclick="showExistingNumbers()" title="View Numbers">
+                        📋 Numbers
+                    </button>
                     <span id="currentDate"></span>
                 </div>
             </div>
@@ -91,561 +94,6 @@
                     </div>
 
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalCows">0</div>
-                            <div class="stat-label">Total Cows</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="milkingCows">0</div>
-                            <div class="stat-label">Milking Cows</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="todayMilk">0L</div>
-                            <div class="stat-label">Today's Milk</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="avgMilk">0L</div>
-                            <div class="stat-label">Average per Cow</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="pregnantCows">0</div>
-                            <div class="stat-label">Pregnant Cows</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="todayRevenue">₹0</div>
-                            <div class="stat-label">Today's Revenue</div>
-                        </div>
-                    </div>
-
-                    <div id="dashboardAlerts"></div>
-
-                    <!-- Quick Actions -->
-                    <div class="quick-actions">
-                        <h3>Quick Actions</h3>
-                        <div class="action-buttons">
-                            <button class="action-btn" onclick="showPage('milk')">
-                                🥛 Record Milk
-                            </button>
-                            <button class="action-btn" onclick="showPage('cows')">
-                                🐄 Add Cow
-                            </button>
-                            <button class="action-btn" onclick="showPage('breeding')">
-                                🔬 Record AI
-                            </button>
-                            <button class="action-btn" onclick="showPage('health')">
-                                💉 Add Vaccination
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cow Management Page -->
-                <div id="cows" class="page">
-                    <div class="page-header">
-                        <h2>Cow Management</h2>
-                        <p>Manage your herd information and tracking</p>
-                    </div>
-
-                    <div class="form-container">
-                        <div class="form-header">
-                            <h3>Add New Cow</h3>
-                            <button type="button" class="btn-small" onclick="showExistingNumbers()">
-                                📋 View Existing Numbers
-                            </button>
-                        </div>
-                        <form id="cowForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Cow Number *</label>
-                                    <input type="text" id="cowNumber" required>
-                                    <small class="form-help">Must be unique - check existing numbers</small>
-                                    <div class="validation-message"></div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Breed *</label>
-                                    <select id="cowBreed" required>
-                                        <option value="">Select Breed</option>
-                                        <option value="Holstein">Holstein</option>
-                                        <option value="Jersey">Jersey</option>
-                                        <option value="Crossbred">Crossbred</option>
-                                        <option value="Gir">Gir</option>
-                                        <option value="Sahiwal">Sahiwal</option>
-                                        <option value="Red Sindhi">Red Sindhi</option>
-                                        <option value="Murrah">Murrah (Buffalo)</option>
-                                        <option value="Nili Ravi">Nili Ravi (Buffalo)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Date of Birth *</label>
-                                    <input type="date" id="cowDob" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Date of Arrival *</label>
-                                    <input type="date" id="cowArrival" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Current Weight (kg)</label>
-                                    <input type="number" id="cowWeight" min="100" max="800" step="0.5">
-                                    <small class="form-help">Typical range: 300-650 kg</small>
-                                </div>
-                                <div class="form-group">
-                                    <label>Body Condition Score (1-5)</label>
-                                    <select id="cowBcs">
-                                        <option value="">Select BCS</option>
-                                        <option value="1">1 - Very Thin</option>
-                                        <option value="2">2 - Thin</option>
-                                        <option value="3">3 - Ideal</option>
-                                        <option value="4">4 - Fat</option>
-                                        <option value="5">5 - Very Fat</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Cow Image</label>
-                                    <input type="file" id="cowImage" accept="image/*">
-                                    <small class="form-help">Recommended: JPG/PNG, max 2MB</small>
-                                    <div id="imagePreview" class="image-preview"></div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Notes</label>
-                                    <textarea id="cowNotes" rows="3" placeholder="Any additional notes about this cow..."></textarea>
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-success">Add Cow</button>
-                                <button type="button" class="btn" onclick="suggestCowNumber()">💡 Suggest Number</button>
-                                <button type="reset" class="btn btn-secondary">Clear Form</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="data-table">
-                        <div class="table-header">
-                            <h3>Cow Database</h3>
-                            <div class="table-controls">
-                                <input type="text" class="search-box" placeholder="Search cows..." id="cowSearch">
-                                <button class="btn-small" onclick="showSearchHelp()">❓ Search Help</button>
-                            </div>
-                        </div>
-                        <div class="filter-container">
-                            <div class="filter-buttons">
-                                <button class="filter-btn active" onclick="filterCows('all')">All</button>
-                                <button class="filter-btn" onclick="filterCows('milking')">Milking</button>
-                                <button class="filter-btn" onclick="filterCows('dry')">Dry</button>
-                                <button class="filter-btn" onclick="filterCows('pregnant')">Pregnant</button>
-                                <button class="filter-btn" onclick="filterCows('sick')">Sick</button>
-                            </div>
-                        </div>
-                        <div class="search-info" id="searchInfo" style="display: none;"></div>
-                        <div id="cowList">
-                            <!-- Cow cards will be loaded here -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Milk Production Page -->
-                <div id="milk" class="page">
-                    <div class="page-header">
-                        <h2>Milk Production</h2>
-                        <p>Record and track daily milk production</p>
-                    </div>
-
-                    <div class="form-container">
-                        <h3>Record Milk Production</h3>
-                        <form id="milkForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Date *</label>
-                                    <input type="date" id="milkDate" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Cow Number *</label>
-                                    <select id="milkCowId" required>
-                                        <option value="">Select Cow</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Session *</label>
-                                    <select id="milkSession" required>
-                                        <option value="">Select Session</option>
-                                        <option value="Morning">Morning</option>
-                                        <option value="Evening">Evening</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Milk Yield (Liters) *</label>
-                                    <input type="number" step="0.1" id="milkYield" required min="0" max="50">
-                                    <small class="form-help">Typical range: 5-25 liters per session</small>
-                                </div>
-                                <div class="form-group">
-                                    <label>Fat %</label>
-                                    <input type="number" step="0.1" id="milkFat" min="1" max="8">
-                                    <small class="form-help">Typical range: 3.0-5.5%</small>
-                                </div>
-                                <div class="form-group">
-                                    <label>SNF %</label>
-                                    <input type="number" step="0.1" id="milkSnf" min="6" max="12">
-                                    <small class="form-help">Typical range: 8.0-9.5%</small>
-                                </div>
-                                <div class="form-group">
-                                    <label>SCC (Somatic Cell Count)</label>
-                                    <input type="number" id="milkScc" min="10000" max="2000000" step="1000">
-                                    <small class="form-help">Lower is better. >400k indicates mastitis risk</small>
-                                </div>
-                                <div class="form-group">
-                                    <label>Remarks</label>
-                                    <textarea id="milkRemarks" rows="2" placeholder="Any observations (health, behavior, etc.)"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-success">Record Production</button>
-                                <button type="reset" class="btn btn-secondary">Clear Form</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="data-table">
-                        <div class="table-header">
-                            <h3>Today's Production Records</h3>
-                            <div class="table-controls">
-                                <input type="text" class="search-box" placeholder="Search records..." id="milkSearch">
-                                <select id="milkDateFilter" class="filter-select">
-                                    <option value="today">Today</option>
-                                    <option value="yesterday">Yesterday</option>
-                                    <option value="week">This Week</option>
-                                    <option value="month">This Month</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Cow Number</th>
-                                        <th>Session</th>
-                                        <th>Yield (L)</th>
-                                        <th>Fat %</th>
-                                        <th>SNF %</th>
-                                        <th>SCC</th>
-                                        <th>Daily Total</th>
-                                        <th>Quality</th>
-                                        <th>Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="milkRecords">
-                                    <!-- Records will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI & Breeding Page -->
-                <div id="breeding" class="page">
-                    <div class="page-header">
-                        <h2>AI & Breeding Management</h2>
-                        <p>Track artificial insemination and breeding cycles</p>
-                    </div>
-
-                    <div class="form-container">
-                        <h3>Record AI Service</h3>
-                        <form id="breedingForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Cow Number *</label>
-                                    <select id="breedingCowId" required>
-                                        <option value="">Select Cow</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>AI Date *</label>
-                                    <input type="date" id="aiDate" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Bull/Semen ID *</label>
-                                    <input type="text" id="semenId" required placeholder="e.g., HO123, JR456">
-                                </div>
-                                <div class="form-group">
-                                    <label>Technician</label>
-                                    <input type="text" id="technician" placeholder="AI technician name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Heat Detection Method</label>
-                                    <select id="heatMethod">
-                                        <option value="">Select Method</option>
-                                        <option value="Visual">Visual Observation</option>
-                                        <option value="Mount">Standing Heat</option>
-                                        <option value="Detector">Heat Detector</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Service Type</label>
-                                    <select id="serviceType">
-                                        <option value="">Select Type</option>
-                                        <option value="First">First Service</option>
-                                        <option value="Repeat">Repeat Service</option>
-                                        <option value="Natural">Natural Service</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Cost (₹)</label>
-                                    <input type="number" id="aiCost" min="0" step="0.01">
-                                </div>
-                                <div class="form-group">
-                                    <label>Notes</label>
-                                    <textarea id="breedingNotes" rows="2" placeholder="Any observations or special notes"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-success">Record AI Service</button>
-                                <button type="reset" class="btn btn-secondary">Clear Form</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="form-container">
-                        <h3>Update Pregnancy Check (PD)</h3>
-                        <form id="pdForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>AI Record *</label>
-                                    <select id="pdRecordId" required>
-                                        <option value="">Select AI Record for PD</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>PD Date *</label>
-                                    <input type="date" id="pdDate" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>PD Result *</label>
-                                    <select id="pdResult" required>
-                                        <option value="">Select Result</option>
-                                        <option value="Positive">Positive (Pregnant)</option>
-                                        <option value="Negative">Negative (Not Pregnant)</option>
-                                        <option value="Repeat">Repeat Check Required</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Veterinarian</label>
-                                    <input type="text" id="pdVet" placeholder="Veterinarian name">
-                                </div>
-                                <div class="form-group">
-                                    <label>PD Method</label>
-                                    <select id="pdMethod">
-                                        <option value="">Select Method</option>
-                                        <option value="Ultrasound">Ultrasound</option>
-                                        <option value="Rectal">Rectal Palpation</option>
-                                        <option value="Blood">Blood Test</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Cost (₹)</label>
-                                    <input type="number" id="pdCost" min="0" step="0.01">
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-success">Update PD Result</button>
-                                <button type="reset" class="btn btn-secondary">Clear Form</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="data-table">
-                        <div class="table-header">
-                            <h3>Breeding Records</h3>
-                            <input type="text" class="search-box" placeholder="Search breeding records...">
-                        </div>
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Cow Number</th>
-                                        <th>AI Date</th>
-                                        <th>Service #</th>
-                                        <th>Semen ID</th>
-                                        <th>PD Due</th>
-                                        <th>PD Result</th>
-                                        <th>Expected Delivery</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="breedingRecords">
-                                    <!-- Records will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Health & Vaccination Page -->
-                <div id="health" class="page">
-                    <div class="page-header">
-                        <h2>Health & Vaccination</h2>
-                        <p>Manage vaccination schedules and health records</p>
-                    </div>
-
-                    <div class="form-container">
-                        <h3>Record Vaccination</h3>
-                        <form id="vaccinationForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Animal Number *</label>
-                                    <select id="vaccineCowId" required>
-                                        <option value="">Select Animal</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Vaccine Type *</label>
-                                    <select id="vaccineType" required>
-                                        <option value="">Select Vaccine</option>
-                                        <option value="FMD">FMD (Foot & Mouth Disease)</option>
-                                        <option value="Deworming">Deworming</option>
-                                        <option value="Brucellosis">Brucellosis</option>
-                                        <option value="BVD">BVD (Bovine Viral Diarrhea)</option>
-                                        <option value="HS">Haemorrhagic Septicaemia</option>
-                                        <option value="Anthrax">Anthrax</option>
-                                        <option value="Blackleg">Blackleg</option>
-                                        <option value="IBR">IBR (Infectious Bovine Rhinotracheitis)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Vaccination Date *</label>
-                                    <input type="date" id="vaccineDate" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Batch Number</label>
-                                    <input type="text" id="vaccineBatch" placeholder="Vaccine batch number">
-                                </div>
-                                <div class="form-group">
-                                    <label>Veterinarian</label>
-                                    <input type="text" id="veterinarian" placeholder="Veterinarian name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Dosage</label>
-                                    <input type="text" id="vaccineDosage" placeholder="e.g., 2ml, 5ml">
-                                </div>
-                                <div class="form-group">
-                                    <label>Cost (₹)</label>
-                                    <input type="number" id="vaccineCost" min="0" step="0.01">
-                                </div>
-                                <div class="form-group">
-                                    <label>Notes</label>
-                                    <textarea id="vaccineNotes" rows="2" placeholder="Any reactions or observations"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-success">Record Vaccination</button>
-                                <button type="reset" class="btn btn-secondary">Clear Form</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="alert alert-info" id="upcomingVaccinations">
-                        <strong>🔔 Upcoming Vaccinations:</strong>
-                        <div id="vaccinationReminders">No upcoming vaccinations</div>
-                    </div>
-
-                    <div class="data-table">
-                        <div class="table-header">
-                            <h3>Vaccination Records</h3>
-                            <input type="text" class="search-box" placeholder="Search vaccination records...">
-                        </div>
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Animal ID</th>
-                                        <th>Vaccine Type</th>
-                                        <th>Date Given</th>
-                                        <th>Next Due</th>
-                                        <th>Batch</th>
-                                        <th>Veterinarian</th>
-                                        <th>Status</th>
-                                        <th>Cost</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="vaccinationRecords">
-                                    <!-- Records will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Feed & Stock Page -->
-                <div id="feed" class="page">
-                    <div class="page-header">
-                        <h2>Feed & Stock Management</h2>
-                        <p>Manage feed inventory and consumption tracking</p>
-                    </div>
-
-                    <div class="form-container">
-                        <h3>Record Feed Transaction</h3>
-                        <form id="feedForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Date *</label>
-                                    <input type="date" id="feedDate" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Feed Item *</label>
-                                    <select id="feedItem" required>
-                                        <option value="">Select Feed Item</option>
-                                        <option value="Concentrate">Concentrate Mix</option>
-                                        <option value="Wheat Bran">Wheat Bran</option>
-                                        <option value="Cotton Seed">Cotton Seed Cake</option>
-                                        <option value="Maize">Maize</option>
-                                        <option value="Hay">Hay</option>
-                                        <option value="Silage">Silage</option>
-                                        <option value="Mineral Mix">Mineral Mix</option>
-                                        <option value="Salt">Salt</option>
-                                        <option value="Green Fodder">Green Fodder</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Transaction Type *</label>
-                                    <select id="feedTransaction" required>
-                                        <option value="">Select Type</option>
-                                        <option value="Purchase">Purchase (In)</option>
-                                        <option value="Consumption">Fed to Animals (Out)</option>
-                                        <option value="Wastage">Wastage/Loss</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Quantity (kg) *</label>
-                                    <input type="number" id="feedQuantity" required min="0" step="0.1">
-                                </div>
-                                <div class="form-group">
-                                    <label>Rate per kg (₹)</label>
-                                    <input type="number" step="0.01" id="feedRate" min="0">
-                                </div>
-                                <div class="form-group">
-                                    <label>Supplier/Notes</label>
-                                    <input type="text" id="feedNotes" placeholder="Supplier name or notes">
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-success">Record Transaction</button>
-                                <button type="reset" class="btn btn-secondary">Clear Form</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalFeedStock">0T</div>
-                            <div class="stat-label">Total Feed Stock</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="dailyConsumption">0kg</div>
-                            <div class="stat-label">Daily Consumption</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="daysRemaining">0</div>
-                            <div class="stat-label">Days Stock Remaining</div>
-                        </div>
                         <div class="stat-card">
                             <div class="stat-value" id="feedCostPerLiter">₹0</div>
                             <div class="stat-label">Feed Cost per Liter</div>
@@ -1079,6 +527,9 @@
         <p>Loading...</p>
     </div>
 
+    <!-- File input for data import (hidden) -->
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+
     <!-- JavaScript Files -->
     <script src="js/data.js"></script>
     <script src="js/navigation.js"></script>
@@ -1096,3 +547,564 @@
     </script>
 </body>
 </html>
+                            <div class="stat-value" id="totalCows">0</div>
+                            <div class="stat-label">Total Cows</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="milkingCows">0</div>
+                            <div class="stat-label">Milking Cows</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="todayMilk">0L</div>
+                            <div class="stat-label">Today's Milk</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgMilk">0L</div>
+                            <div class="stat-label">Average per Cow</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="pregnantCows">0</div>
+                            <div class="stat-label">Pregnant Cows</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="todayRevenue">₹0</div>
+                            <div class="stat-label">Today's Revenue</div>
+                        </div>
+                    </div>
+
+                    <div id="dashboardAlerts"></div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="showPage('milk')">
+                                🥛 Record Milk
+                            </button>
+                            <button class="action-btn" onclick="showPage('cows')">
+                                🐄 Add Cow
+                            </button>
+                            <button class="action-btn" onclick="showPage('breeding')">
+                                🔬 Record AI
+                            </button>
+                            <button class="action-btn" onclick="showPage('health')">
+                                💉 Add Vaccination
+                            </button>
+                            <button class="action-btn" onclick="showPage('feed')">
+                                🌾 Manage Feed
+                            </button>
+                            <button class="action-btn" onclick="showPage('sales')">
+                                💰 Record Sale
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cow Management Page -->
+                <div id="cows" class="page">
+                    <div class="page-header">
+                        <h2>Cow Management</h2>
+                        <p>Manage your herd information and tracking</p>
+                    </div>
+
+                    <div class="form-container">
+                        <div class="form-header">
+                            <h3>Add New Cow</h3>
+                            <button type="button" class="btn-small" onclick="showExistingNumbers()">
+                                📋 View Existing Numbers
+                            </button>
+                        </div>
+                        <form id="cowForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Cow Number *</label>
+                                    <input type="text" id="cowNumber" required>
+                                    <small class="form-help">Must be unique - check existing numbers</small>
+                                    <div class="validation-message"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Breed *</label>
+                                    <select id="cowBreed" required>
+                                        <option value="">Select Breed</option>
+                                        <option value="Holstein">Holstein</option>
+                                        <option value="Jersey">Jersey</option>
+                                        <option value="Crossbred">Crossbred</option>
+                                        <option value="Gir">Gir</option>
+                                        <option value="Sahiwal">Sahiwal</option>
+                                        <option value="Red Sindhi">Red Sindhi</option>
+                                        <option value="Murrah">Murrah (Buffalo)</option>
+                                        <option value="Nili Ravi">Nili Ravi (Buffalo)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Date of Birth *</label>
+                                    <input type="date" id="cowDob" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Date of Arrival *</label>
+                                    <input type="date" id="cowArrival" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Current Weight (kg)</label>
+                                    <input type="number" id="cowWeight" min="100" max="800" step="0.5">
+                                    <small class="form-help">Typical range: 300-650 kg</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Body Condition Score (1-5)</label>
+                                    <select id="cowBcs">
+                                        <option value="">Select BCS</option>
+                                        <option value="1">1 - Very Thin</option>
+                                        <option value="2">2 - Thin</option>
+                                        <option value="3">3 - Ideal</option>
+                                        <option value="4">4 - Fat</option>
+                                        <option value="5">5 - Very Fat</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cow Image</label>
+                                    <input type="file" id="cowImage" accept="image/*">
+                                    <small class="form-help">Recommended: JPG/PNG, max 2MB</small>
+                                    <div id="imagePreview" class="image-preview"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Notes</label>
+                                    <textarea id="cowNotes" rows="3" placeholder="Any additional notes about this cow..."></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success">Add Cow</button>
+                                <button type="button" class="btn" onclick="suggestCowNumber()">💡 Suggest Number</button>
+                                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3>Cow Database</h3>
+                            <div class="table-controls">
+                                <input type="text" class="search-box" placeholder="Search cows..." id="cowSearch">
+                                <button class="btn-small" onclick="showSearchHelp()">❓ Search Help</button>
+                            </div>
+                        </div>
+                        <div class="filter-container">
+                            <div class="filter-buttons">
+                                <button class="filter-btn active" onclick="filterCows('all')">All</button>
+                                <button class="filter-btn" onclick="filterCows('milking')">Milking</button>
+                                <button class="filter-btn" onclick="filterCows('dry')">Dry</button>
+                                <button class="filter-btn" onclick="filterCows('pregnant')">Pregnant</button>
+                                <button class="filter-btn" onclick="filterCows('sick')">Sick</button>
+                            </div>
+                        </div>
+                        <div class="search-info" id="searchInfo" style="display: none;"></div>
+                        <div id="cowList">
+                            <!-- Cow cards will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Milk Production Page -->
+                <div id="milk" class="page">
+                    <div class="page-header">
+                        <h2>Milk Production</h2>
+                        <p>Record and track daily milk production</p>
+                    </div>
+
+                    <div class="form-container">
+                        <h3>Record Milk Production</h3>
+                        <form id="milkForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Date *</label>
+                                    <input type="date" id="milkDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cow Number *</label>
+                                    <select id="milkCowId" required>
+                                        <option value="">Select Cow</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Session *</label>
+                                    <select id="milkSession" required>
+                                        <option value="">Select Session</option>
+                                        <option value="Morning">Morning</option>
+                                        <option value="Evening">Evening</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Milk Yield (Liters) *</label>
+                                    <input type="number" step="0.1" id="milkYield" required min="0" max="50">
+                                    <small class="form-help">Typical range: 5-25 liters per session</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fat %</label>
+                                    <input type="number" step="0.1" id="milkFat" min="1" max="8">
+                                    <small class="form-help">Typical range: 3.0-5.5%</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>SNF %</label>
+                                    <input type="number" step="0.1" id="milkSnf" min="6" max="12">
+                                    <small class="form-help">Typical range: 8.0-9.5%</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>SCC (Somatic Cell Count)</label>
+                                    <input type="number" id="milkScc" min="10000" max="2000000" step="1000">
+                                    <small class="form-help">Lower is better. >400k indicates mastitis risk</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Remarks</label>
+                                    <textarea id="milkRemarks" rows="2" placeholder="Any observations (health, behavior, etc.)"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success">Record Production</button>
+                                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3>Production Records</h3>
+                            <div class="table-controls">
+                                <input type="text" class="search-box" placeholder="Search records..." id="milkSearch">
+                                <select id="milkDateFilter" class="filter-select">
+                                    <option value="today">Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Cow Number</th>
+                                        <th>Session</th>
+                                        <th>Yield (L)</th>
+                                        <th>Fat %</th>
+                                        <th>SNF %</th>
+                                        <th>SCC</th>
+                                        <th>Daily Total</th>
+                                        <th>Quality</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="milkRecords">
+                                    <!-- Records will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI & Breeding Page -->
+                <div id="breeding" class="page">
+                    <div class="page-header">
+                        <h2>AI & Breeding Management</h2>
+                        <p>Track artificial insemination and breeding cycles</p>
+                    </div>
+
+                    <div class="form-container">
+                        <h3>Record AI Service</h3>
+                        <form id="breedingForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Cow Number *</label>
+                                    <select id="breedingCowId" required>
+                                        <option value="">Select Cow</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>AI Date *</label>
+                                    <input type="date" id="aiDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Bull/Semen ID *</label>
+                                    <input type="text" id="semenId" required placeholder="e.g., HO123, JR456">
+                                </div>
+                                <div class="form-group">
+                                    <label>Technician</label>
+                                    <input type="text" id="technician" placeholder="AI technician name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Heat Detection Method</label>
+                                    <select id="heatMethod">
+                                        <option value="">Select Method</option>
+                                        <option value="Visual">Visual Observation</option>
+                                        <option value="Mount">Standing Heat</option>
+                                        <option value="Detector">Heat Detector</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    <select id="serviceType">
+                                        <option value="">Select Type</option>
+                                        <option value="First">First Service</option>
+                                        <option value="Repeat">Repeat Service</option>
+                                        <option value="Natural">Natural Service</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cost (₹)</label>
+                                    <input type="number" id="aiCost" min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Notes</label>
+                                    <textarea id="breedingNotes" rows="2" placeholder="Any observations or special notes"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success">Record AI Service</button>
+                                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="form-container">
+                        <h3>Update Pregnancy Check (PD)</h3>
+                        <form id="pdForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>AI Record *</label>
+                                    <select id="pdRecordId" required>
+                                        <option value="">Select AI Record for PD</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>PD Date *</label>
+                                    <input type="date" id="pdDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>PD Result *</label>
+                                    <select id="pdResult" required>
+                                        <option value="">Select Result</option>
+                                        <option value="Positive">Positive (Pregnant)</option>
+                                        <option value="Negative">Negative (Not Pregnant)</option>
+                                        <option value="Repeat">Repeat Check Required</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Veterinarian</label>
+                                    <input type="text" id="pdVet" placeholder="Veterinarian name">
+                                </div>
+                                <div class="form-group">
+                                    <label>PD Method</label>
+                                    <select id="pdMethod">
+                                        <option value="">Select Method</option>
+                                        <option value="Ultrasound">Ultrasound</option>
+                                        <option value="Rectal">Rectal Palpation</option>
+                                        <option value="Blood">Blood Test</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cost (₹)</label>
+                                    <input type="number" id="pdCost" min="0" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success">Update PD Result</button>
+                                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3>Breeding Records</h3>
+                            <input type="text" class="search-box" placeholder="Search breeding records...">
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Cow Number</th>
+                                        <th>AI Date</th>
+                                        <th>Service #</th>
+                                        <th>Semen ID</th>
+                                        <th>PD Due</th>
+                                        <th>PD Result</th>
+                                        <th>Expected Delivery</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="breedingRecords">
+                                    <!-- Records will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health & Vaccination Page -->
+                <div id="health" class="page">
+                    <div class="page-header">
+                        <h2>Health & Vaccination</h2>
+                        <p>Manage vaccination schedules and health records</p>
+                    </div>
+
+                    <div class="form-container">
+                        <h3>Record Vaccination</h3>
+                        <form id="vaccinationForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Animal Number *</label>
+                                    <select id="vaccineCowId" required>
+                                        <option value="">Select Animal</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Vaccine Type *</label>
+                                    <select id="vaccineType" required>
+                                        <option value="">Select Vaccine</option>
+                                        <option value="FMD">FMD (Foot & Mouth Disease)</option>
+                                        <option value="Deworming">Deworming</option>
+                                        <option value="Brucellosis">Brucellosis</option>
+                                        <option value="BVD">BVD (Bovine Viral Diarrhea)</option>
+                                        <option value="HS">Haemorrhagic Septicaemia</option>
+                                        <option value="Anthrax">Anthrax</option>
+                                        <option value="Blackleg">Blackleg</option>
+                                        <option value="IBR">IBR (Infectious Bovine Rhinotracheitis)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Vaccination Date *</label>
+                                    <input type="date" id="vaccineDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Batch Number</label>
+                                    <input type="text" id="vaccineBatch" placeholder="Vaccine batch number">
+                                </div>
+                                <div class="form-group">
+                                    <label>Veterinarian</label>
+                                    <input type="text" id="veterinarian" placeholder="Veterinarian name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Dosage</label>
+                                    <input type="text" id="vaccineDosage" placeholder="e.g., 2ml, 5ml">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cost (₹)</label>
+                                    <input type="number" id="vaccineCost" min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>Notes</label>
+                                    <textarea id="vaccineNotes" rows="2" placeholder="Any reactions or observations"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success">Record Vaccination</button>
+                                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="alert alert-info" id="upcomingVaccinations">
+                        <strong>🔔 Upcoming Vaccinations:</strong>
+                        <div id="vaccinationReminders">No upcoming vaccinations</div>
+                    </div>
+
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3>Vaccination Records</h3>
+                            <input type="text" class="search-box" placeholder="Search vaccination records...">
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Animal ID</th>
+                                        <th>Vaccine Type</th>
+                                        <th>Date Given</th>
+                                        <th>Next Due</th>
+                                        <th>Batch</th>
+                                        <th>Veterinarian</th>
+                                        <th>Status</th>
+                                        <th>Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vaccinationRecords">
+                                    <!-- Records will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed & Stock Page -->
+                <div id="feed" class="page">
+                    <div class="page-header">
+                        <h2>Feed & Stock Management</h2>
+                        <p>Manage feed inventory and consumption tracking</p>
+                    </div>
+
+                    <div class="form-container">
+                        <h3>Record Feed Transaction</h3>
+                        <form id="feedForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Date *</label>
+                                    <input type="date" id="feedDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Feed Item *</label>
+                                    <select id="feedItem" required>
+                                        <option value="">Select Feed Item</option>
+                                        <option value="Concentrate">Concentrate Mix</option>
+                                        <option value="Wheat Bran">Wheat Bran</option>
+                                        <option value="Cotton Seed">Cotton Seed Cake</option>
+                                        <option value="Maize">Maize</option>
+                                        <option value="Hay">Hay</option>
+                                        <option value="Silage">Silage</option>
+                                        <option value="Mineral Mix">Mineral Mix</option>
+                                        <option value="Salt">Salt</option>
+                                        <option value="Green Fodder">Green Fodder</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Transaction Type *</label>
+                                    <select id="feedTransaction" required>
+                                        <option value="">Select Type</option>
+                                        <option value="Purchase">Purchase (In)</option>
+                                        <option value="Consumption">Fed to Animals (Out)</option>
+                                        <option value="Wastage">Wastage/Loss</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quantity (kg) *</label>
+                                    <input type="number" id="feedQuantity" required min="0" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label>Rate per kg (₹)</label>
+                                    <input type="number" step="0.01" id="feedRate" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Supplier/Notes</label>
+                                    <input type="text" id="feedNotes" placeholder="Supplier name or notes">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success">Record Transaction</button>
+                                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalFeedStock">0T</div>
+                            <div class="stat-label">Total Feed Stock</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="dailyConsumption">0kg</div>
+                            <div class="stat-label">Daily Consumption</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="daysRemaining">0</div>
+                            <div class="stat-label">Days Stock Remaining</div>
+                        </div>
+                        <div class="stat-card">
