@@ -739,3 +739,157 @@ function addNumberSuggestion() {
         cowNumberInput.parentNode.appendChild(suggestBtn);
     }
 }
+// Cow Status Logic & Auto-Update Functions - Add to data.js
+
+// Cow status criteria and automatic updates
+function updateCowStatuses() {
+    appData.cows.forEach(cow => {
+        cow.status = calculateCowStatus(cow);
+    });
+    saveData();
+}
+
+function calculateCowStatus(cow) {
+    const cowId = cow.id;
+    const today = new Date();
+    
+    // Check if cow is pregnant
+    const pregnantRecord = appData.breeding.find(b => 
+        b.cowId === cowId && 
+        b.pdResult === 'Positive' && 
+        !b.actualDelivery
+    );
+    
+    if (pregnantRecord) {
+        const expectedDelivery = new Date(pregnantRecord.expectedDelivery);
+        const daysUntilCalving = Math.ceil((expectedDelivery - today) / (1000 * 60 * 60 * 24));
+        
+        // If within 60 days of calving, mark as dry
+        if (daysUntilCalving <= 60) {
+            return 'Dry';
+        }
+        return 'Pregnant';
+    }
+    
+    // Check if cow has calved recently (within 7 days)
+    const recentCalving = appData.breeding.find(b => 
+        b.cowId === cowId && 
+        b.actualDelivery &&
+        Math.ceil((today - new Date(b.actualDelivery)) / (1000 * 60 * 60 * 24)) <= 7
+    );
+    
+    if (recentCalving) {
+        return 'Fresh'; // Just calved
+    }
+    
+    // Check milk production to determine if milking
+    const recentMilk = appData.milkProduction.filter(m => 
+        m.cowId === cowId &&
+        Math.ceil((today - new Date(m.date)) / (1000 * 60 * 60 * 24)) <= 7
+    );
+    
+    if (recentMilk.length > 0) {
+        const avgDailyMilk = recentMilk.reduce((sum, m) => sum + m.yield, 0) / 7;
+        
+        // If producing less than 2L per day, consider dry
+        if (avgDailyMilk < 2) {
+            return 'Dry';
+        }
+        return 'Milking';
+    }
+    
+    // Check if cow is sick (high SCC or health issues)
+    const recentHighSCC = appData.milkProduction.find(m => 
+        m.cowId === cowId &&
+        m.scc > 750000 &&
+        Math.ceil((today - new Date(m.date)) / (1000 * 60 * 60 * 24)) <= 3
+    );
+    
+    if (recentHighSCC) {
+        return 'Sick';
+    }
+    
+    // Check if cow hasn't been milked for over 14 days
+    const lastMilkRecord = appData.milkProduction
+        .filter(m => m.cowId === cowId)
+        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    
+    if (lastMilkRecord) {
+        const daysSinceLastMilk = Math.ceil((today - new Date(lastMilkRecord.date)) / (1000 * 60 * 60 * 24));
+        if (daysSinceLastMilk > 14) {
+            return 'Dry';
+        }
+    }
+    
+    // Default status
+    return cow.status || 'Active';
+}
+
+// Status definitions and colors
+const COW_STATUS_DEFINITIONS = {
+    'Milking': {
+        description: 'Currently being milked regularly (>2L/day)',
+        color: '#3498db',
+        criteria: 'Recent milk production >2L/day average'
+    },
+    'Dry': {
+        description: 'Not producing milk (pregnant >7 months or resting)',
+        color: '#95a5a6',
+        criteria: 'No milk production or <2L/day for 7+ days, or 60 days before calving'
+    },
+    'Pregnant': {
+        description: 'Confirmed pregnant but still milking',
+        color: '#e74c3c',
+        criteria: 'Positive pregnancy diagnosis, >60 days before calving'
+    },
+    'Fresh': {
+        description: 'Recently calved (within 7 days)',
+        color: '#f39c12',
+        criteria: 'Calved within last 7 days'
+    },
+    'Sick': {
+        description: 'Health issues detected',
+        color: '#e67e22',
+        criteria: 'High SCC (>750k) or marked as sick'
+    },
+    'Open': {
+        description: 'Not pregnant, available for breeding',
+        color: '#27ae60',
+        criteria: 'Not pregnant, ready for AI services'
+    },
+    'Sold': {
+        description: 'Sold or removed from herd',
+        color: '#7f8c8d',
+        criteria: 'Manually marked as sold'
+    }
+};
+
+// Auto-update cow statuses daily
+function scheduleStatusUpdates() {
+    // Update statuses when app loads
+    updateCowStatuses();
+    
+    // Set up daily updates at 6 AM
+    const now = new Date();
+    const sixAM = new Date();
+    sixAM.setHours(6, 0, 0, 0);
+    
+    if (now > sixAM) {
+        sixAM.setDate(sixAM.getDate() + 1);
+    }
+    
+    const timeUntilSixAM = sixAM - now;
+    
+    setTimeout(() => {
+        updateCowStatuses();
+        updateDashboard();
+        updateCowList();
+        
+        // Schedule daily updates
+        setInterval(() => {
+            updateCowStatuses();
+            updateDashboard();
+            updateCowList();
+        }, 24 * 60 * 60 * 1000); // 24 hours
+    }, timeUntilSixAM);
+}
