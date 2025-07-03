@@ -1,15 +1,10 @@
-// js/app.js - Main Application
+// Updated App Initialization - Add to app.js
 
-// Initialize the entire application
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🐄 Dairy Farm Management System Starting...');
-    
-    // Initialize core systems
-    initializeApp();
-});
-
+// Enhanced initialization function
 function initializeApp() {
     try {
+        console.log('🐄 Dairy Farm Management System Starting...');
+        
         // 1. Initialize data management
         console.log('📊 Loading data...');
         loadData();
@@ -18,19 +13,37 @@ function initializeApp() {
         console.log('🧭 Setting up navigation...');
         initializeNavigation();
         
-        // 3. Initialize form handlers
-        console.log('📝 Setting up forms...');
+        // 3. Initialize enhanced form handlers
+        console.log('📝 Setting up enhanced forms...');
         initializeForms();
+        setupEnhancedCowForm();
+        setupEnhancedCalfForm();
         
-        // 4. Initialize notifications
+        // 4. Initialize validation and search
+        console.log('🔍 Setting up validation and search...');
+        setupNumberValidation();
+        setupImagePreview();
+        setupAdvancedSearch();
+        
+        // 5. Initialize cow status system
+        console.log('📋 Setting up cow status tracking...');
+        scheduleStatusUpdates();
+        
+        // 6. Initialize notifications
         console.log('🔔 Setting up notifications...');
         initializeNotifications();
         
-        // 5. Load all data displays
+        // 7. Load all data displays
         console.log('🔄 Updating displays...');
         updateAllDisplays();
         
-        // 6. Set up periodic updates
+        // 8. Add UI enhancements
+        console.log('🎨 Setting up UI enhancements...');
+        createFilterButtons();
+        addNumberReferenceToForms();
+        addNumberSuggestion();
+        
+        // 9. Set up periodic updates
         console.log('⏰ Setting up periodic updates...');
         setupPeriodicUpdates();
         
@@ -38,7 +51,7 @@ function initializeApp() {
         
         // Show welcome message
         setTimeout(() => {
-            showAlert('success', 'Welcome to Dairy Farm Management System!');
+            showAlert('success', 'Welcome to Enhanced Dairy Farm Management System!');
         }, 1000);
         
     } catch (error) {
@@ -47,6 +60,7 @@ function initializeApp() {
     }
 }
 
+// Enhanced update function
 function updateAllDisplays() {
     updateCowList();
     updateMilkRecords();
@@ -57,16 +71,24 @@ function updateAllDisplays() {
     updateSalesRecords();
     updateDashboard();
     updateDashboardAlerts();
+    
+    // Update number references
+    setTimeout(() => {
+        addNumberReferenceToForms();
+    }, 500);
 }
 
+// Enhanced periodic updates
 function setupPeriodicUpdates() {
     // Update dashboard every 5 minutes
     setInterval(() => {
         updateDashboard();
     }, 300000);
     
-    // Check alerts every hour
+    // Check and update cow statuses every hour
     setInterval(() => {
+        updateCowStatuses();
+        updateCowList();
         checkAlerts();
         updateDashboardAlerts();
     }, 3600000);
@@ -74,279 +96,60 @@ function setupPeriodicUpdates() {
     // Save data every 10 minutes (backup)
     setInterval(() => {
         saveData();
+        console.log('📁 Auto-saved data');
     }, 600000);
-}
-
-// Service Worker registration for PWA
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-            console.log('SW registered successfully:', registration);
-        })
-        .catch(error => {
-            console.log('SW registration failed:', error);
-        });
-}
-
-// Handle offline/online status
-window.addEventListener('online', function() {
-    showAlert('success', 'Back online! Data will sync automatically.');
-});
-
-window.addEventListener('offline', function() {
-    showAlert('warning', 'You are offline. Data will be saved locally.');
-});
-
-// Handle app installation
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
     
-    // Show install button or prompt
-    showInstallPrompt();
-});
+    // Update number references when data changes
+    setInterval(() => {
+        addNumberReferenceToForms();
+    }, 60000);
+}
 
-function showInstallPrompt() {
-    const installAlert = document.createElement('div');
-    installAlert.className = 'alert alert-info';
-    installAlert.innerHTML = `
-        <strong>📱 Install App:</strong> 
-        Add this app to your home screen for better experience!
-        <button onclick="installApp()" class="btn" style="margin-left: 10px;">Install</button>
-        <button onclick="this.parentElement.remove()" class="btn" style="margin-left: 5px;">Later</button>
+// Enhanced search criteria help
+function showSearchHelp() {
+    const helpContent = `
+        <div class="search-help">
+            <h4>🔍 Search Tips:</h4>
+            <ul>
+                <li><strong>Cow Number:</strong> Type "101" or "102"</li>
+                <li><strong>Breed:</strong> Type "Holstein", "Jersey", etc.</li>
+                <li><strong>Status:</strong> Type "Milking", "Dry", "Pregnant"</li>
+                <li><strong>Age:</strong> Type "24 months" or just "24"</li>
+                <li><strong>Weight:</strong> Type "550kg" or "550"</li>
+            </ul>
+            <div class="search-examples">
+                <h5>Examples:</h5>
+                <code>101</code> - Find cow #101<br>
+                <code>Holstein</code> - All Holstein cows<br>
+                <code>Milking</code> - All milking cows<br>
+                <code>24</code> - Cows around 24 months old
+            </div>
+        </div>
     `;
     
-    document.body.appendChild(installAlert);
+    showModal('Search Help', helpContent);
+}
+
+// Add help button to search
+function addSearchHelp() {
+    const searchBox = document.getElementById('cowSearch');
+    if (searchBox && !searchBox.parentNode.querySelector('.search-help-btn')) {
+        const helpBtn = document.createElement('button');
+        helpBtn.type = 'button';
+        helpBtn.className = 'btn-small search-help-btn';
+        helpBtn.innerHTML = '❓ Help';
+        helpBtn.onclick = showSearchHelp;
+        helpBtn.style.marginLeft = '10px';
+        searchBox.parentNode.appendChild(helpBtn);
+    }
+}
+
+// Initialize all features when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
     
+    // Add search help after a delay
     setTimeout(() => {
-        if (installAlert.parentElement) {
-            installAlert.remove();
-        }
-    }, 10000);
-}
-
-function installApp() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((result) => {
-            if (result.outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-                showAlert('success', 'App installed successfully!');
-            }
-            deferredPrompt = null;
-        });
-    }
-}
-
-// Handle app updates
-window.addEventListener('appinstalled', () => {
-    showAlert('success', 'App installed! You can now access it from your home screen.');
+        addSearchHelp();
+    }, 2000);
 });
-
-// Error handling
-window.addEventListener('error', function(e) {
-    console.error('Application error:', e.error);
-    showAlert('danger', 'An error occurred. Please refresh the page if problems persist.');
-});
-
-// Unhandled promise rejection handling
-window.addEventListener('unhandledrejection', function(e) {
-    console.error('Unhandled promise rejection:', e.reason);
-    e.preventDefault();
-});
-
-// Handle app visibility changes
-document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'visible') {
-        // App became visible - refresh data
-        updateDashboard();
-        checkAlerts();
-    }
-});
-
-// Handle app focus
-window.addEventListener('focus', function() {
-    // App gained focus - refresh critical data
-    updateDashboard();
-});
-
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + K to focus search
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        const searchBox = document.querySelector('.search-box');
-        if (searchBox) {
-            searchBox.focus();
-        }
-    }
-    
-    // Ctrl/Cmd + D for dashboard
-    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-        e.preventDefault();
-        showPage('dashboard');
-    }
-    
-    // Ctrl/Cmd + M for milk production
-    if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
-        e.preventDefault();
-        showPage('milk');
-    }
-});
-
-// Touch/gesture support for mobile
-let touchStartX = 0;
-let touchStartY = 0;
-
-document.addEventListener('touchstart', function(e) {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
-});
-
-document.addEventListener('touchend', function(e) {
-    const touchEndX = e.changedTouches[0].screenX;
-    const touchEndY = e.changedTouches[0].screenY;
-    
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-    
-    // Swipe right to open sidebar (mobile)
-    if (deltaX > 50 && Math.abs(deltaY) < 50 && window.innerWidth <= 768) {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar.classList.contains('mobile-hidden')) {
-            sidebar.classList.remove('mobile-hidden');
-        }
-    }
-    
-    // Swipe left to close sidebar (mobile)
-    if (deltaX < -50 && Math.abs(deltaY) < 50 && window.innerWidth <= 768) {
-        const sidebar = document.getElementById('sidebar');
-        if (!sidebar.classList.contains('mobile-hidden')) {
-            sidebar.classList.add('mobile-hidden');
-        }
-    }
-});
-
-// Handle screen orientation changes
-window.addEventListener('orientationchange', function() {
-    setTimeout(() => {
-        // Recalculate layout after orientation change
-        initializePageContent();
-    }, 100);
-});
-
-// Performance monitoring
-function trackPerformance() {
-    if ('performance' in window) {
-        const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
-        console.log(`App loaded in ${loadTime}ms`);
-        
-        // Track page navigation performance
-        const observer = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-                if (entry.entryType === 'navigation') {
-                    console.log(`Navigation timing: ${entry.duration}ms`);
-                }
-            }
-        });
-        
-        observer.observe({ entryTypes: ['navigation'] });
-    }
-}
-
-// Initialize performance tracking
-trackPerformance();
-
-// Auto-save functionality
-let autoSaveInterval;
-
-function startAutoSave() {
-    autoSaveInterval = setInterval(() => {
-        saveData();
-        console.log('Auto-saved data');
-    }, 300000); // Save every 5 minutes
-}
-
-function stopAutoSave() {
-    if (autoSaveInterval) {
-        clearInterval(autoSaveInterval);
-    }
-}
-
-// Start auto-save
-startAutoSave();
-
-// Handle page unload
-window.addEventListener('beforeunload', function(e) {
-    // Save data before page unload
-    saveData();
-    
-    // Show warning if there are unsaved changes
-    const hasUnsavedChanges = false; // You can implement logic to check for unsaved changes
-    
-    if (hasUnsavedChanges) {
-        const message = 'You have unsaved changes. Are you sure you want to leave?';
-        e.returnValue = message;
-        return message;
-    }
-});
-
-// Initialize app theme
-function initializeTheme() {
-    const savedTheme = localStorage.getItem('dairyFarmTheme');
-    if (savedTheme) {
-        document.body.classList.add(savedTheme);
-    } else {
-        // Default to light theme
-        document.body.classList.add('light-theme');
-    }
-}
-
-// Theme toggle (if you want to add dark mode later)
-function toggleTheme() {
-    const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    document.body.classList.remove(`${currentTheme}-theme`);
-    document.body.classList.add(`${newTheme}-theme`);
-    
-    localStorage.setItem('dairyFarmTheme', `${newTheme}-theme`);
-}
-
-// Initialize theme on load
-initializeTheme();
-
-// Add global utilities
-window.DairyFarmApp = {
-    version: '1.0.0',
-    data: appData,
-    saveData: saveData,
-    loadData: loadData,
-    exportData: exportData,
-    importData: importData,
-    showAlert: showAlert,
-    showPage: showPage,
-    updateDashboard: updateDashboard
-};
-
-// Console welcome message
-console.log(`
-🐄 Dairy Farm Management System v${window.DairyFarmApp.version}
-📱 Ready for production use!
-🔧 Debug mode: ${localStorage.getItem('debug') === 'true' ? 'ON' : 'OFF'}
-`);
-
-// Debug mode
-if (localStorage.getItem('debug') === 'true') {
-    console.log('🔍 Debug mode enabled');
-    window.debugApp = {
-        data: appData,
-        notifications: notificationSystem,
-        clearData: () => {
-            localStorage.removeItem('dairyFarmData');
-            location.reload();
-        }
-    };
-}
