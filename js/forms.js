@@ -173,7 +173,15 @@ function updateCowList() {
         cowCard.innerHTML = `
             <div class="cow-header">
                 <div class="cow-number">Cow #${cow.number}</div>
+                <div class="cow-actions">
+                    <button class="btn-small btn-view" onclick="viewCow('${cow.id}')">👁️ View</button>
+                    <button class="btn-small btn-edit" onclick="editCow('${cow.id}')">✏️ Edit</button>
+                    <button class="btn-small btn-delete" onclick="deleteCow('${cow.id}')">🗑️ Delete</button>
+                </div>
+            </div>
+            <div class="cow-status-row">
                 <div class="cow-status status-${cow.status.toLowerCase()}">${cow.status}</div>
+                ${cow.image ? `<img src="${cow.image}" alt="Cow ${cow.number}" class="cow-thumbnail">` : '<div class="no-image">📷 No Image</div>'}
             </div>
             <div class="cow-details">
                 <div class="detail-item">
@@ -191,6 +199,14 @@ function updateCowList() {
                 <div class="detail-item">
                     <div class="detail-value">BCS ${cow.bcs}</div>
                     <div class="detail-label">Body Condition</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">${getLastMilkDate(cow.id)}</div>
+                    <div class="detail-label">Last Milked</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">${getLifetimeMilk(cow.id)}L</div>
+                    <div class="detail-label">Lifetime Milk</div>
                 </div>
             </div>
         `;
@@ -739,157 +755,324 @@ function addNumberSuggestion() {
         cowNumberInput.parentNode.appendChild(suggestBtn);
     }
 }
-// Cow Status Logic & Auto-Update Functions - Add to data.js
-
-// Cow status criteria and automatic updates
-function updateCowStatuses() {
-    appData.cows.forEach(cow => {
-        cow.status = calculateCowStatus(cow);
-    });
-    saveData();
+function viewCow(cowId) {
+    const cow = appData.cows.find(c => c.id === cowId);
+    if (!cow) return;
+    
+    const age = calculateAge(cow.dob);
+    const lifetimeMilk = getLifetimeMilk(cowId);
+    const lastMilkDate = getLastMilkDate(cowId);
+    const avgDailyMilk = getAverageDailyMilk(cowId);
+    
+    const modalContent = `
+        <div class="cow-detail-view">
+            <div class="cow-image-section">
+                ${cow.image ? `<img src="${cow.image}" alt="Cow ${cow.number}" class="cow-detail-image">` : '<div class="no-image-large">📷 No Image</div>'}
+            </div>
+            <div class="cow-info-section">
+                <h3>Cow #${cow.number} - ${cow.breed}</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Status:</strong> 
+                        <span class="cow-status status-${cow.status.toLowerCase()}">${cow.status}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Age:</strong> ${age} months
+                    </div>
+                    <div class="info-item">
+                        <strong>Weight:</strong> ${cow.weight}kg
+                    </div>
+                    <div class="info-item">
+                        <strong>Body Condition:</strong> ${cow.bcs}/5
+                    </div>
+                    <div class="info-item">
+                        <strong>Date of Birth:</strong> ${formatDate(cow.dob)}
+                    </div>
+                    <div class="info-item">
+                        <strong>Arrival Date:</strong> ${formatDate(cow.arrival)}
+                    </div>
+                    <div class="info-item">
+                        <strong>Lifetime Milk:</strong> ${lifetimeMilk}L
+                    </div>
+                    <div class="info-item">
+                        <strong>Average Daily:</strong> ${avgDailyMilk}L
+                    </div>
+                    <div class="info-item">
+                        <strong>Last Milked:</strong> ${lastMilkDate}
+                    </div>
+                    <div class="info-item">
+                        <strong>Days in Milk:</strong> ${getDaysInMilk(cowId)} days
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    showModal(`Cow Details - #${cow.number}`, modalContent);
 }
 
-function calculateCowStatus(cow) {
-    const cowId = cow.id;
-    const today = new Date();
+function editCow(cowId) {
+    const cow = appData.cows.find(c => c.id === cowId);
+    if (!cow) return;
     
-    // Check if cow is pregnant
-    const pregnantRecord = appData.breeding.find(b => 
-        b.cowId === cowId && 
-        b.pdResult === 'Positive' && 
-        !b.actualDelivery
-    );
+    const modalContent = `
+        <form id="editCowForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Cow Number</label>
+                    <input type="text" id="editCowNumber" value="${cow.number}" required>
+                </div>
+                <div class="form-group">
+                    <label>Breed</label>
+                    <select id="editCowBreed" required>
+                        <option value="Holstein" ${cow.breed === 'Holstein' ? 'selected' : ''}>Holstein</option>
+                        <option value="Jersey" ${cow.breed === 'Jersey' ? 'selected' : ''}>Jersey</option>
+                        <option value="Crossbred" ${cow.breed === 'Crossbred' ? 'selected' : ''}>Crossbred</option>
+                        <option value="Gir" ${cow.breed === 'Gir' ? 'selected' : ''}>Gir</option>
+                        <option value="Sahiwal" ${cow.breed === 'Sahiwal' ? 'selected' : ''}>Sahiwal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="editCowDob" value="${cow.dob}" required>
+                </div>
+                <div class="form-group">
+                    <label>Current Weight (kg)</label>
+                    <input type="number" id="editCowWeight" value="${cow.weight}">
+                </div>
+                <div class="form-group">
+                    <label>Body Condition Score (1-5)</label>
+                    <select id="editCowBcs">
+                        <option value="1" ${cow.bcs === 1 ? 'selected' : ''}>1 - Very Thin</option>
+                        <option value="2" ${cow.bcs === 2 ? 'selected' : ''}>2 - Thin</option>
+                        <option value="3" ${cow.bcs === 3 ? 'selected' : ''}>3 - Ideal</option>
+                        <option value="4" ${cow.bcs === 4 ? 'selected' : ''}>4 - Fat</option>
+                        <option value="5" ${cow.bcs === 5 ? 'selected' : ''}>5 - Very Fat</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editCowStatus" required>
+                        <option value="Milking" ${cow.status === 'Milking' ? 'selected' : ''}>Milking</option>
+                        <option value="Dry" ${cow.status === 'Dry' ? 'selected' : ''}>Dry</option>
+                        <option value="Pregnant" ${cow.status === 'Pregnant' ? 'selected' : ''}>Pregnant</option>
+                        <option value="Sick" ${cow.status === 'Sick' ? 'selected' : ''}>Sick</option>
+                        <option value="Sold" ${cow.status === 'Sold' ? 'selected' : ''}>Sold</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cow Image</label>
+                    <input type="file" id="editCowImage" accept="image/*">
+                    ${cow.image ? `<img src="${cow.image}" alt="Current" class="current-image">` : ''}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Update Cow</button>
+            <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+        </form>
+    `;
     
-    if (pregnantRecord) {
-        const expectedDelivery = new Date(pregnantRecord.expectedDelivery);
-        const daysUntilCalving = Math.ceil((expectedDelivery - today) / (1000 * 60 * 60 * 24));
+    showModal(`Edit Cow #${cow.number}`, modalContent);
+    
+    // Handle form submission
+    document.getElementById('editCowForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // If within 60 days of calving, mark as dry
-        if (daysUntilCalving <= 60) {
-            return 'Dry';
-        }
-        return 'Pregnant';
-    }
-    
-    // Check if cow has calved recently (within 7 days)
-    const recentCalving = appData.breeding.find(b => 
-        b.cowId === cowId && 
-        b.actualDelivery &&
-        Math.ceil((today - new Date(b.actualDelivery)) / (1000 * 60 * 60 * 24)) <= 7
-    );
-    
-    if (recentCalving) {
-        return 'Fresh'; // Just calved
-    }
-    
-    // Check milk production to determine if milking
-    const recentMilk = appData.milkProduction.filter(m => 
-        m.cowId === cowId &&
-        Math.ceil((today - new Date(m.date)) / (1000 * 60 * 60 * 24)) <= 7
-    );
-    
-    if (recentMilk.length > 0) {
-        const avgDailyMilk = recentMilk.reduce((sum, m) => sum + m.yield, 0) / 7;
+        const newNumber = document.getElementById('editCowNumber').value;
         
-        // If producing less than 2L per day, consider dry
-        if (avgDailyMilk < 2) {
-            return 'Dry';
+        // Check if number is unique (excluding current cow)
+        if (newNumber !== cow.number && appData.cows.some(c => c.number === newNumber)) {
+            showAlert('danger', 'Cow number already exists!');
+            return;
         }
-        return 'Milking';
-    }
-    
-    // Check if cow is sick (high SCC or health issues)
-    const recentHighSCC = appData.milkProduction.find(m => 
-        m.cowId === cowId &&
-        m.scc > 750000 &&
-        Math.ceil((today - new Date(m.date)) / (1000 * 60 * 60 * 24)) <= 3
-    );
-    
-    if (recentHighSCC) {
-        return 'Sick';
-    }
-    
-    // Check if cow hasn't been milked for over 14 days
-    const lastMilkRecord = appData.milkProduction
-        .filter(m => m.cowId === cowId)
-        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-    
-    if (lastMilkRecord) {
-        const daysSinceLastMilk = Math.ceil((today - new Date(lastMilkRecord.date)) / (1000 * 60 * 60 * 24));
-        if (daysSinceLastMilk > 14) {
-            return 'Dry';
-        }
-    }
-    
-    // Default status
-    return cow.status || 'Active';
-}
-
-// Status definitions and colors
-const COW_STATUS_DEFINITIONS = {
-    'Milking': {
-        description: 'Currently being milked regularly (>2L/day)',
-        color: '#3498db',
-        criteria: 'Recent milk production >2L/day average'
-    },
-    'Dry': {
-        description: 'Not producing milk (pregnant >7 months or resting)',
-        color: '#95a5a6',
-        criteria: 'No milk production or <2L/day for 7+ days, or 60 days before calving'
-    },
-    'Pregnant': {
-        description: 'Confirmed pregnant but still milking',
-        color: '#e74c3c',
-        criteria: 'Positive pregnancy diagnosis, >60 days before calving'
-    },
-    'Fresh': {
-        description: 'Recently calved (within 7 days)',
-        color: '#f39c12',
-        criteria: 'Calved within last 7 days'
-    },
-    'Sick': {
-        description: 'Health issues detected',
-        color: '#e67e22',
-        criteria: 'High SCC (>750k) or marked as sick'
-    },
-    'Open': {
-        description: 'Not pregnant, available for breeding',
-        color: '#27ae60',
-        criteria: 'Not pregnant, ready for AI services'
-    },
-    'Sold': {
-        description: 'Sold or removed from herd',
-        color: '#7f8c8d',
-        criteria: 'Manually marked as sold'
-    }
-};
-
-// Auto-update cow statuses daily
-function scheduleStatusUpdates() {
-    // Update statuses when app loads
-    updateCowStatuses();
-    
-    // Set up daily updates at 6 AM
-    const now = new Date();
-    const sixAM = new Date();
-    sixAM.setHours(6, 0, 0, 0);
-    
-    if (now > sixAM) {
-        sixAM.setDate(sixAM.getDate() + 1);
-    }
-    
-    const timeUntilSixAM = sixAM - now;
-    
-    setTimeout(() => {
-        updateCowStatuses();
-        updateDashboard();
-        updateCowList();
         
-        // Schedule daily updates
-        setInterval(() => {
-            updateCowStatuses();
-            updateDashboard();
+        // Update cow data
+        cow.number = newNumber;
+        cow.breed = document.getElementById('editCowBreed').value;
+        cow.dob = document.getElementById('editCowDob').value;
+        cow.weight = parseFloat(document.getElementById('editCowWeight').value) || 0;
+        cow.bcs = parseInt(document.getElementById('editCowBcs').value);
+        cow.status = document.getElementById('editCowStatus').value;
+        
+        // Handle image upload
+        const imageFile = document.getElementById('editCowImage').files[0];
+        if (imageFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cow.image = e.target.result;
+                saveData();
+                updateCowList();
+                populateDropdowns();
+                showAlert('success', 'Cow updated successfully!');
+                closeModal();
+            };
+            reader.readAsDataURL(imageFile);
+        } else {
+            saveData();
             updateCowList();
-        }, 24 * 60 * 60 * 1000); // 24 hours
-    }, timeUntilSixAM);
+            populateDropdowns();
+            showAlert('success', 'Cow updated successfully!');
+            closeModal();
+        }
+    });
+}
+
+function deleteCow(cowId) {
+    const cow = appData.cows.find(c => c.id === cowId);
+    if (!cow) return;
+    
+    if (confirm(`Are you sure you want to delete Cow #${cow.number}? This action cannot be undone.`)) {
+        // Remove cow from array
+        appData.cows = appData.cows.filter(c => c.id !== cowId);
+        
+        // Also remove related data
+        appData.milkProduction = appData.milkProduction.filter(m => m.cowId !== cowId);
+        appData.breeding = appData.breeding.filter(b => b.cowId !== cowId);
+        appData.vaccinations = appData.vaccinations.filter(v => v.cowId !== cowId);
+        
+        saveData();
+        updateCowList();
+        updateDashboard();
+        populateDropdowns();
+        showAlert('success', 'Cow deleted successfully!');
+    }
+}
+
+// Helper functions
+function getLastMilkDate(cowId) {
+    const milkRecords = appData.milkProduction.filter(m => m.cowId === cowId);
+    if (milkRecords.length === 0) return 'Never';
+    
+    const lastRecord = milkRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    return formatDate(lastRecord.date);
+}
+
+function getLifetimeMilk(cowId) {
+    return appData.milkProduction
+        .filter(m => m.cowId === cowId)
+        .reduce((sum, m) => sum + m.yield, 0)
+        .toFixed(1);
+}
+
+function getAverageDailyMilk(cowId) {
+    const milkRecords = appData.milkProduction.filter(m => m.cowId === cowId);
+    if (milkRecords.length === 0) return '0.0';
+    
+    const dailyTotals = {};
+    milkRecords.forEach(record => {
+        if (!dailyTotals[record.date]) {
+            dailyTotals[record.date] = 0;
+        }
+        dailyTotals[record.date] += record.yield;
+    });
+    
+    const totalDays = Object.keys(dailyTotals).length;
+    const totalMilk = Object.values(dailyTotals).reduce((sum, daily) => sum + daily, 0);
+    
+    return totalDays > 0 ? (totalMilk / totalDays).toFixed(1) : '0.0';
+}
+
+function getDaysInMilk(cowId) {
+    const lastCalvingDate = getLastCalvingDate(cowId);
+    if (!lastCalvingDate) return 0;
+    
+    const today = new Date();
+    const calving = new Date(lastCalvingDate);
+    const diffTime = today - calving;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+function getLastCalvingDate(cowId) {
+    const calvingRecords = appData.breeding.filter(b => b.cowId === cowId && b.actualDelivery);
+    if (calvingRecords.length === 0) return null;
+    
+    return calvingRecords.sort((a, b) => new Date(b.actualDelivery) - new Date(a.actualDelivery))[0].actualDelivery;
+}
+// Enhanced Search & Filter Functions - Add to forms.js
+
+// Advanced search functionality for cows
+function setupAdvancedSearch() {
+    const cowSearch = document.getElementById('cowSearch');
+    if (cowSearch) {
+        cowSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            searchCows(searchTerm);
+        });
+    }
+}
+
+function searchCows(searchTerm) {
+    const cowCards = document.querySelectorAll('.cow-card');
+    let visibleCount = 0;
+    
+    cowCards.forEach(card => {
+        const cowNumber = card.querySelector('.cow-number').textContent.toLowerCase();
+        const cowBreed = card.querySelector('.detail-value').textContent.toLowerCase();
+        const cowStatus = card.querySelector('.cow-status').textContent.toLowerCase();
+        const cowAge = card.textContent.toLowerCase();
+        
+        // Search in multiple fields
+        const isVisible = cowNumber.includes(searchTerm) || 
+                         cowBreed.includes(searchTerm) || 
+                         cowStatus.includes(searchTerm) || 
+                         cowAge.includes(searchTerm);
+        
+        card.style.display = isVisible ? 'block' : 'none';
+        if (isVisible) visibleCount++;
+    });
+    
+    // Show search results count
+    updateSearchCount(visibleCount);
+}
+
+function updateSearchCount(count) {
+    let searchInfo = document.getElementById('searchInfo');
+    if (!searchInfo) {
+        searchInfo = document.createElement('div');
+        searchInfo.id = 'searchInfo';
+        searchInfo.className = 'search-info';
+        document.getElementById('cowList').parentNode.insertBefore(searchInfo, document.getElementById('cowList'));
+    }
+    
+    if (document.getElementById('cowSearch').value) {
+        searchInfo.innerHTML = `<small>Showing ${count} cow(s) matching your search</small>`;
+        searchInfo.style.display = 'block';
+    } else {
+        searchInfo.style.display = 'none';
+    }
+}
+
+// Filter functions
+function createFilterButtons() {
+    const tableHeader = document.querySelector('.table-header');
+    const filterContainer = document.createElement('div');
+    filterContainer.className = 'filter-container';
+    filterContainer.innerHTML = `
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterCows('all')">All</button>
+            <button class="filter-btn" onclick="filterCows('milking')">Milking</button>
+            <button class="filter-btn" onclick="filterCows('dry')">Dry</button>
+            <button class="filter-btn" onclick="filterCows('pregnant')">Pregnant</button>
+            <button class="filter-btn" onclick="filterCows('sick')">Sick</button>
+        </div>
+    `;
+    tableHeader.appendChild(filterContainer);
+}
+
+function filterCows(status) {
+    const cowCards = document.querySelectorAll('.cow-card');
+    let visibleCount = 0;
+    
+    // Update active filter button
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    cowCards.forEach(card => {
+        const cowStatus = card.querySelector('.cow-status').textContent.toLowerCase();
+        const isVisible = status === 'all' || cowStatus.includes(status);
+        
+        card.style.display = isVisible ? 'block' : 'none';
+        if (isVisible) visibleCount++;
+    });
+    
+    updateSearchCount(visibleCount);
 }
