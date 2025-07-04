@@ -1595,3 +1595,209 @@ tr:hover {
         grid-template-columns: 1fr !important;
     }
 }
+/* Add this to your styles.css - PAGE LAYOUT FIX */
+
+/* ========================================
+   CRITICAL PAGE LAYOUT FIX
+   ======================================== */
+
+/* Ensure content-area is a proper container */
+.content-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevent content bleeding */
+}
+
+/* Base page styling - CRITICAL */
+.page {
+    display: none !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    opacity: 0 !important;
+    z-index: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+}
+
+/* Active page styling - CRITICAL */
+.page.active {
+    display: block !important;
+    position: relative !important;
+    opacity: 1 !important;
+    z-index: 10 !important;
+}
+
+/* Ensure page content is properly contained */
+.page > * {
+    display: none;
+}
+
+.page.active > * {
+    display: block;
+}
+
+/* Specific display fixes for different elements */
+.page.active .stats-grid {
+    display: grid !important;
+}
+
+.page.active .form-grid {
+    display: grid !important;
+}
+
+.page.active .action-buttons {
+    display: grid !important;
+}
+
+.page.active .table-wrapper table {
+    display: table !important;
+}
+
+.page.active .form-actions {
+    display: flex !important;
+}
+
+.page.active .table-controls {
+    display: flex !important;
+}
+
+.page.active .filter-buttons {
+    display: flex !important;
+}
+
+.page.active .alert-sections {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.page.active .info-grid {
+    display: grid !important;
+}
+
+/* Ensure forms and inputs are visible in active pages */
+.page.active input,
+.page.active select,
+.page.active textarea,
+.page.active button {
+    display: block !important;
+}
+
+.page.active button {
+    display: inline-block !important;
+}
+
+.page.active span,
+.page.active label {
+    display: inline !important;
+}
+
+.page.active .form-group {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Table elements */
+.page.active table {
+    display: table !important;
+}
+
+.page.active thead {
+    display: table-header-group !important;
+}
+
+.page.active tbody {
+    display: table-row-group !important;
+}
+
+.page.active tr {
+    display: table-row !important;
+}
+
+.page.active th,
+.page.active td {
+    display: table-cell !important;
+}
+
+/* Headers and text */
+.page.active h1,
+.page.active h2,
+.page.active h3,
+.page.active h4,
+.page.active h5,
+.page.active h6 {
+    display: block !important;
+}
+
+.page.active p {
+    display: block !important;
+}
+
+.page.active ul,
+.page.active ol {
+    display: block !important;
+}
+
+.page.active li {
+    display: list-item !important;
+}
+
+/* Specific component fixes */
+.page.active .cow-card {
+    display: block !important;
+}
+
+.page.active .stat-card {
+    display: block !important;
+}
+
+.page.active .form-container {
+    display: block !important;
+}
+
+.page.active .data-table {
+    display: block !important;
+}
+
+.page.active .quick-actions {
+    display: block !important;
+}
+
+.page.active .page-header {
+    display: block !important;
+}
+
+.page.active .alert {
+    display: block !important;
+}
+
+/* Navigation fixes */
+.nav-item {
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.nav-item.active {
+    background-color: #34495e !important;
+    border-left: 3px solid #3498db !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .page.active .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .page.active .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .page.active .action-buttons {
+        grid-template-columns: 1fr !important;
+    }
+}
