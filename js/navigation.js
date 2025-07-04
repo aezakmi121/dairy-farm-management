@@ -1,70 +1,146 @@
 // js/navigation.js - Complete Navigation System with Page Isolation
 
 // Enhanced showPage function with aggressive page isolation
+// Replace the showPage function in your navigation.js with this:
+
 function showPage(pageId) {
-    console.log('🔄 Switching to page:', pageId);
+    console.log('Switching to page:', pageId);
     
-    try {
-        // Step 1: Aggressively hide ALL pages
-        document.querySelectorAll('.page').forEach(page => {
-            page.classList.remove('active');
-            page.style.display = 'none';
-            page.style.visibility = 'hidden';
-            page.style.opacity = '0';
-            page.style.position = 'absolute';
-            page.style.left = '-9999px';
-            page.style.zIndex = '-1';
-            page.setAttribute('aria-hidden', 'true');
-        });
+    // Step 1: Hide ALL pages completely
+    const allPages = document.querySelectorAll('.page');
+    allPages.forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
+        page.style.opacity = '0';
+        page.style.visibility = 'hidden';
+        page.style.position = 'absolute';
+        page.style.left = '-9999px';
+        page.style.zIndex = '-1';
+    });
+    
+    // Step 2: Show ONLY the selected page
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.style.display = 'block';
+        targetPage.style.opacity = '1';
+        targetPage.style.visibility = 'visible';
+        targetPage.style.position = 'relative';
+        targetPage.style.left = 'auto';
+        targetPage.style.zIndex = '10';
         
-        // Step 2: Remove active from nav items
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        
-        // Step 3: Show ONLY the selected page
-        const selectedPage = document.getElementById(pageId);
-        if (selectedPage) {
-            selectedPage.classList.add('active');
-            selectedPage.style.display = 'block';
-            selectedPage.style.visibility = 'visible';
-            selectedPage.style.opacity = '1';
-            selectedPage.style.position = 'relative';
-            selectedPage.style.left = 'auto';
-            selectedPage.style.zIndex = '1';
-            selectedPage.setAttribute('aria-hidden', 'false');
-            
-            console.log('✅ Page activated successfully:', pageId);
-        } else {
-            console.error('❌ Page not found:', pageId);
-            return;
+        console.log('Page shown:', pageId);
+    } else {
+        console.error('Page not found:', pageId);
+        return;
+    }
+    
+    // Step 3: Update navigation
+    updateNavigation(pageId);
+    
+    // Step 4: Load page data
+    loadPageData(pageId);
+    
+    // Step 5: Handle mobile sidebar
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.add('mobile-hidden');
         }
-        
-        // Step 4: Update navigation state
-        updateNavigationState(pageId);
-        
-        // Step 5: Load page-specific data
-        loadPageData(pageId);
-        
-        // Step 6: Hide mobile sidebar
-        if (window.innerWidth <= 768) {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) {
-                sidebar.classList.add('mobile-hidden');
-            }
-        }
-        
-        // Step 7: Clear any form validation errors
-        clearFormErrors();
-        
-        // Step 8: Reset forms in inactive pages
-        resetAllForms();
-        
-    } catch (error) {
-        console.error('❌ Error in showPage:', error);
     }
 }
 
+function updateNavigation(pageId) {
+    // Remove active from all nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Page to nav index mapping
+    const pageNavMap = {
+        'dashboard': 0,
+        'cows': 1,
+        'milk': 2,
+        'breeding': 3,
+        'health': 4,
+        'feed': 5,
+        'calves': 6,
+        'sales': 7,
+        'reports': 8,
+        'alerts': 9
+    };
+    
+    // Add active to correct nav item
+    const navItems = document.querySelectorAll('.nav-item');
+    const navIndex = pageNavMap[pageId];
+    if (navIndex !== undefined && navItems[navIndex]) {
+        navItems[navIndex].classList.add('active');
+    }
+    
+    // Update page title
+    const titles = {
+        'dashboard': 'Dashboard',
+        'cows': 'Cow Management',
+        'milk': 'Milk Production',
+        'breeding': 'AI & Breeding',
+        'health': 'Health & Vaccination',
+        'feed': 'Feed & Stock',
+        'calves': 'Calf Management',
+        'sales': 'Milk Sales',
+        'reports': 'Reports & Analytics',
+        'alerts': 'Alerts & Notifications'
+    };
+    
+    const titleElement = document.getElementById('pageTitle');
+    if (titleElement) {
+        titleElement.textContent = titles[pageId] || 'Dashboard';
+    }
+}
+
+// Initialize pages properly on load
+function initializePages() {
+    console.log('Initializing pages...');
+    
+    // Hide all pages first
+    const allPages = document.querySelectorAll('.page');
+    allPages.forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
+        page.style.opacity = '0';
+        page.style.visibility = 'hidden';
+        page.style.position = 'absolute';
+        page.style.left = '-9999px';
+        page.style.zIndex = '-1';
+    });
+    
+    // Show dashboard by default
+    setTimeout(() => {
+        showPage('dashboard');
+    }, 100);
+}
+
+// Add this to ensure proper initialization
+document.addEventListener('DOMContentLoaded', function() {
+    initializePages();
+});
+
+// Periodic check to ensure page isolation (run every 3 seconds)
+setInterval(function() {
+    const activePages = document.querySelectorAll('.page.active');
+    if (activePages.length > 1) {
+        console.warn('Multiple active pages detected, fixing...');
+        // Keep only the first active page
+        for (let i = 1; i < activePages.length; i++) {
+            activePages[i].classList.remove('active');
+            activePages[i].style.display = 'none';
+            activePages[i].style.opacity = '0';
+            activePages[i].style.visibility = 'hidden';
+            activePages[i].style.position = 'absolute';
+            activePages[i].style.left = '-9999px';
+            activePages[i].style.zIndex = '-1';
+        }
+    }
+}, 3000);
 // Update navigation state
 function updateNavigationState(pageId) {
     // Add active to correct nav item
